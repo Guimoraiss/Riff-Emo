@@ -1051,6 +1051,10 @@ h2 {
     justify-content: end;
   }
 
+  .site-header .cart-button {
+    display: none;
+  }
+
   .bottom-nav {
     position: fixed;
     right: 10px;
@@ -1059,7 +1063,7 @@ h2 {
     left: 10px;
     z-index: 35;
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
     min-height: 66px;
     padding: 7px;

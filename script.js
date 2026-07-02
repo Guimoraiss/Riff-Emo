@@ -546,7 +546,7 @@ function applyFilter(filter) {
 function currentMobileSection(hash) {
   if (hash.startsWith("#band/")) return "bands";
   if (hash === "#bands") return "bands";
-  if (hash === "#collections") return "collections";
+  if (hash === "#collections") return "bands";
   if (hash === "#new") return "new";
   return "home";
 }
