@@ -173,6 +173,9 @@ const app = document.querySelector("#app");
 const bandMenu = document.querySelector("#bandMenu");
 const cartButton = document.querySelector(".cart-button");
 const cartCount = cartButton.querySelector("strong");
+const mobileCartButton = document.querySelector("[data-mobile-cart]");
+const mobileCartCount = mobileCartButton.querySelector("strong");
+const mobileNavItems = document.querySelectorAll("[data-mobile-nav]");
 const cartDrawer = document.querySelector("#cartDrawer");
 const cartItemsList = document.querySelector("#cartItems");
 const cartOverlay = document.querySelector(".cart-overlay");
@@ -282,7 +285,8 @@ function home() {
       ${heroNote}
     </section>
 
-    <section class="section" id="collections" aria-labelledby="collectionsTitle">
+    <section class="section" id="bands" aria-labelledby="collectionsTitle">
+      <span class="section-anchor" id="collections"></span>
       <div class="section-header">
         <div>
           ${collectionsContent.eyebrow ? `<p class="eyebrow">${collectionsContent.eyebrow}</p>` : ""}
@@ -412,7 +416,9 @@ function bandPage(band) {
 function setCartCount(value) {
   cartItems = value;
   cartCount.textContent = cartItems;
+  mobileCartCount.textContent = cartItems;
   cartButton.setAttribute("aria-label", `Sacola com ${cartItems} ${cartItems === 1 ? "item" : "itens"}`);
+  mobileCartButton.setAttribute("aria-label", `Abrir sacola com ${cartItems} ${cartItems === 1 ? "item" : "itens"}`);
 }
 
 function renderCart() {
@@ -537,13 +543,44 @@ function applyFilter(filter) {
   });
 }
 
+function currentMobileSection(hash) {
+  if (hash.startsWith("#band/")) return "bands";
+  if (hash === "#bands") return "bands";
+  if (hash === "#collections") return "collections";
+  if (hash === "#new") return "new";
+  return "home";
+}
+
+function updateMobileNav() {
+  const activeSection = currentMobileSection(window.location.hash || "#home");
+
+  mobileNavItems.forEach((item) => {
+    const isActive = item.dataset.mobileNav === activeSection;
+    item.classList.toggle("is-active", isActive);
+    if (isActive) {
+      item.setAttribute("aria-current", "page");
+    } else {
+      item.removeAttribute("aria-current");
+    }
+  });
+}
+
 function render() {
   const hash = window.location.hash || "#home";
   const bandId = hash.startsWith("#band/") ? hash.replace("#band/", "") : null;
   const band = bands.find((item) => item.id === bandId);
 
   app.innerHTML = band ? bandPage(band) : home();
-  window.scrollTo({ top: 0, behavior: "auto" });
+  updateMobileNav();
+
+  if (band || hash === "#home") {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    return;
+  }
+
+  requestAnimationFrame(() => {
+    document.querySelector(hash)?.scrollIntoView({ block: "start" });
+  });
 }
 
 bandMenu.innerHTML = bands.map((band) => `<a href="#band/${band.id}">${band.name}</a>`).join("");
@@ -556,6 +593,7 @@ document.addEventListener("click", (event) => {
   const decreaseButton = event.target.closest("[data-cart-decrease]");
   const increaseButton = event.target.closest("[data-cart-increase]");
   const removeButton = event.target.closest("[data-cart-remove]");
+  const mobileCartTrigger = event.target.closest("[data-mobile-cart]");
 
   if (filterButton) {
     applyFilter(filterButton.dataset.filter);
@@ -571,7 +609,7 @@ document.addEventListener("click", (event) => {
     setTheme(currentTheme === "dark" ? "light" : "dark");
   }
 
-  if (cartButton.contains(event.target)) {
+  if (cartButton.contains(event.target) || mobileCartTrigger) {
     openCart();
   }
 
@@ -602,6 +640,3 @@ setTheme(currentTheme);
 renderCart();
 window.addEventListener("hashchange", render);
 render();
-
-
-
