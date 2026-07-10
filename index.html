@@ -21,6 +21,14 @@
     <link rel="preconnect" href="https://cdn.shopify.com" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      try {
+        const savedTheme = localStorage.getItem("riff-emo-theme");
+        document.documentElement.dataset.theme = savedTheme === "light" ? "light" : "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
@@ -91,9 +99,8 @@
     <template id="collectionsContent">
       <span data-field="eyebrow">Bandas</span>
       <span data-field="title">Aqui na Riff Emo, você encontra as melhores camisetas de bandas</span>
-      <span data-field="deftonesLabel">Deftones / frio minimalista</span>
-      <span data-field="paramoreLabel">Paramore / jaqueta de capa</span>
-      <span data-field="radioheadLabel">Radiohead / arte conceitual</span>
+      <span data-field="paramoreLabel">Paramore</span>
+      <span data-field="radioheadLabel">Radiohead</span>
     </template>
 
     <main id="app"></main>
@@ -113,9 +120,59 @@
           <span>Total</span>
           <strong id="cartTotal">R$ 0,00</strong>
         </div>
-        <button class="btn cart-checkout" type="button">Finalizar Compra</button>
+        <button class="btn cart-checkout" type="button" disabled>Finalizar compra</button>
       </div>
     </aside>
+
+    <dialog class="checkout-modal" id="checkoutModal" aria-labelledby="checkoutTitle">
+      <div class="checkout-modal__header">
+        <div>
+          <p class="eyebrow">Checkout demonstrativo</p>
+          <h2 id="checkoutTitle">Finalizar pedido</h2>
+        </div>
+        <button class="checkout-modal__close" type="button" data-checkout-close aria-label="Fechar checkout">×</button>
+      </div>
+
+      <div class="checkout-view" data-checkout-form-view>
+        <div class="checkout-summary" id="checkoutSummary" aria-label="Resumo do pedido"></div>
+        <form class="checkout-form" id="checkoutForm">
+          <div class="checkout-form__grid">
+            <label>
+              Nome
+              <input type="text" name="name" autocomplete="name" required />
+            </label>
+            <label>
+              E-mail
+              <input type="email" name="email" autocomplete="email" required />
+            </label>
+            <label>
+              CEP
+              <input type="text" name="postalCode" inputmode="numeric" autocomplete="postal-code" minlength="8" required />
+            </label>
+            <label>
+              Cidade
+              <input type="text" name="city" autocomplete="address-level2" required />
+            </label>
+            <label class="checkout-form__wide">
+              Endereço
+              <input type="text" name="address" autocomplete="street-address" required />
+            </label>
+          </div>
+          <p class="checkout-form__note">Simulação para portfólio: os dados não são enviados nem armazenados e nenhuma cobrança será realizada.</p>
+          <button class="btn" type="submit">Confirmar pedido fictício</button>
+        </form>
+      </div>
+
+      <div class="checkout-success" data-checkout-success hidden>
+        <span class="checkout-success__mark" aria-hidden="true">✓</span>
+        <p class="eyebrow">Pedido confirmado</p>
+        <h2>Valeu pela escolha.</h2>
+        <p>Seu pedido fictício <strong id="checkoutOrderNumber"></strong> foi criado com sucesso.</p>
+        <button class="btn" type="button" data-checkout-close>Continuar navegando</button>
+      </div>
+    </dialog>
+
+    <div class="toast" role="status" aria-live="polite" aria-atomic="true" hidden></div>
 
     <footer class="site-footer">
       <div>
@@ -126,6 +183,7 @@
       </nav>
     </footer>
 
+    <script src="catalog.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
